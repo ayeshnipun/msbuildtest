@@ -9,7 +9,7 @@ on:
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: macos-latest
 
         steps:
             - name: Checkout repository
@@ -28,7 +28,7 @@ jobs:
                   echo "GITHUB_REF: $GITHUB_REF"
                   echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
 
-            - name: Restore NuGet packages
+            - name: Restore
               run: dotnet restore
 
             - name: Build Android
