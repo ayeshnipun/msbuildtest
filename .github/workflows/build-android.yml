@@ -31,5 +31,5 @@ jobs:
             - name: Restore
               run: dotnet restore
 
-            - name: Build Android
-              run: dotnet build ./msbuildtest.csproj -c Release /p:CurrentBranch=$GITHUB_REF_NAME
+            - name: Build Android only
+              run: dotnet build ./msbuildtest.csproj -c Release -f net10.0-android /p:CurrentBranch=$GITHUB_REF_NAME
