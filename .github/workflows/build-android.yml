@@ -5,31 +5,27 @@ on:
         branches:
             - main
             - "release/*"
-    pull_request:
 
 jobs:
     build:
         runs-on: macos-latest
 
         steps:
-            - name: Checkout repository
+            - name: Checkout
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # REQUIRED for GitVersion
 
             - name: Setup .NET
               uses: actions/setup-dotnet@v4
               with:
                   dotnet-version: "10.0.x"
 
-            - name: Install MAUI workload
+            - name: Install MAUI Workload
               run: dotnet workload install maui
-
-            - name: Print branch info
-              run: |
-                  echo "GITHUB_REF: $GITHUB_REF"
-                  echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
 
             - name: Restore
               run: dotnet restore
 
-            - name: Build Android only
+            - name: Build ANDROID only
               run: dotnet build ./msbuildtest.csproj -c Release -f net10.0-android /p:CurrentBranch=$GITHUB_REF_NAME
