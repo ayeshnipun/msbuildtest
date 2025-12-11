@@ -1,0 +1,35 @@
+name: Build MAUI Android
+
+on:
+    push:
+        branches:
+            - main
+            - "release/*"
+    pull_request:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: "10.0.x"
+
+            - name: Install MAUI workload
+              run: dotnet workload install maui
+
+            - name: Print branch info
+              run: |
+                  echo "GITHUB_REF: $GITHUB_REF"
+                  echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
+
+            - name: Restore NuGet packages
+              run: dotnet restore
+
+            - name: Build Android
+              run: dotnet build ./msbuildtest.csproj -c Release /p:CurrentBranch=$GITHUB_REF_NAME
