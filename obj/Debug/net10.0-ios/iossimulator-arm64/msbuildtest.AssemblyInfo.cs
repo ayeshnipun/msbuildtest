@@ -12,11 +12,12 @@ using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("msbuildtest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("0.0.1.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute(("0.0.1-1+Branch.main.Sha.1b56462f978267db0e2ea710196d6b62279e6de4.1b56462f978267db" +
+    "0e2ea710196d6b62279e6de4"))]
 [assembly: System.Reflection.AssemblyProductAttribute("msbuildtest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("msbuildtest")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("0.0.1.0")]
 [assembly: System.Runtime.Versioning.TargetPlatformAttribute("iOS26.1")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("iOS15.0")]
 

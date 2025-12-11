@@ -43,36 +43,32 @@
         <GenerateVersionFromBranch>true</GenerateVersionFromBranch>
     </PropertyGroup>
 
-    <Target Name="ReadBranchVersion" BeforeTargets="BeforeBuild" Condition="'$(GenerateVersionFromBranch)'=='true'">
-        <!-- 1. Read current Git branch name -->
-        <Exec Command="git rev-parse --abbrev-ref HEAD" ConsoleToMSBuild="true">
-            <Output TaskParameter="ConsoleOutput" PropertyName="CurrentBranch" />
-        </Exec>
+   <PropertyGroup Condition="'$(GenerateVersionFromBranch)'=='true'">
+    <!-- Use CurrentBranch if passed from command line, else fallback to git -->
+    <EffectiveBranch Condition="'$(CurrentBranch)' != ''">$(CurrentBranch)</EffectiveBranch>
+    <EffectiveBranch Condition="'$(EffectiveBranch)' == ''">
+        $([System.Text.RegularExpressions.Regex]::Replace(`$(MSBuildThisFileDirectory)`, '^.*$', 'main'))
+    </EffectiveBranch>
 
-        <!-- 2. Extract version from release/x.y.z -->
-        <PropertyGroup>
-            <!-- Extract the version after "release/" -->
-            <ExtractedVersion>$([System.Text.RegularExpressions.Regex]::Match('$(CurrentBranch)','release\/([0-9]+\.[0-9]+\.[0-9]+)').Groups[1].Value)</ExtractedVersion>
-        </PropertyGroup>
+    <!-- Extract version from release/x.y.z -->
+    <ExtractedVersion>$([System.Text.RegularExpressions.Regex]::Match('$(EffectiveBranch)','release\/([0-9]+\.[0-9]+\.[0-9]+)').Groups[1].Value)</ExtractedVersion>
 
-        <!-- 3. If in a release branch, apply version -->
-        <PropertyGroup Condition="'$(ExtractedVersion)' != ''">
-            <ApplicationDisplayVersion>$(ExtractedVersion)</ApplicationDisplayVersion>
+    <!-- Fallback version -->
+    <ApplicationDisplayVersion Condition="'$(ExtractedVersion)' != ''">$(ExtractedVersion)</ApplicationDisplayVersion>
+    <ApplicationDisplayVersion Condition="'$(ExtractedVersion)' == ''">0.0.0-dev</ApplicationDisplayVersion>
 
-            <!-- Convert x.y.z → xyzzzz for Android -->
-            <ApplicationVersion>$([System.Int32]::Parse('$([System.String]::Copy($(ExtractedVersion)).Replace(".", ""))') * 10)</ApplicationVersion>
-        </PropertyGroup>
+    <CleanVersion>$([System.String]::Copy($(ExtractedVersion)).Replace(".", ""))</CleanVersion>
+    <ApplicationVersion Condition="'$(ExtractedVersion)' != ''">$([MSBuild]::Multiply($(CleanVersion), 10))</ApplicationVersion>
+    <ApplicationVersion Condition="'$(ExtractedVersion)' == ''">1</ApplicationVersion>
+</PropertyGroup>
 
-        <PropertyGroup Condition="'$(ExtractedVersion)'==''">
-            <ApplicationDisplayVersion>0.0.0-dev</ApplicationDisplayVersion>
-            <ApplicationVersion>1</ApplicationVersion>
-        </PropertyGroup>
+<Target Name="PrintVersion" AfterTargets="PrepareForBuild">
+    <Message Text="Branch: $(EffectiveBranch)" Importance="High"/>
+    <Message Text="Derived Version: $(ExtractedVersion)" Importance="High"/>
+    <Message Text="DisplayVersion: $(ApplicationDisplayVersion)" Importance="High"/>
+    <Message Text="VersionCode: $(ApplicationVersion)" Importance="High"/>
+</Target>
 
-        <Message Text="Branch: $(CurrentBranch)" Importance="high" />
-        <Message Text="Derived Version: $(ExtractedVersion)" Importance="high" />
-        <Message Text="DisplayVersion: $(ApplicationDisplayVersion)" Importance="high" />
-        <Message Text="VersionCode: $(ApplicationVersion)" Importance="high" />
-    </Target>
 
 	<ItemGroup>
 		<!-- App Icon -->
